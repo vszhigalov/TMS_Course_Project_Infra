@@ -33,14 +33,14 @@ output "aws_instans_public_ip" {
     value = data.aws_instances.webserver_instance.public_ips
 }
 #--------------------------------------------------
-data "aws_ami" "latest_ubuntu" {
-  owners      = ["897567800073"]
-  most_recent = true
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-}
+# data "aws_ami" "latest_ubuntu" {
+#   owners      = ["897567800073"]
+#   most_recent = true
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+#   }
+# }
 
 #--------------------------------------------------------------
 resource "aws_security_group" "webSG" {
