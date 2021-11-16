@@ -30,7 +30,7 @@ data "aws_instances" "webserver_instance" {
 }
 
 output "aws_instans_public_ip" {
-    value = data.aws_instances.webserver_instans.public_ips
+    value = data.aws_instances.webserver_instance.public_ips
 }
 #--------------------------------------------------
 data "aws_ami" "latest_ubuntu" {
