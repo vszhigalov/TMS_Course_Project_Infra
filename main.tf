@@ -12,7 +12,7 @@ variable "instance_type" {
 variable "app_subnets" {
     type = list(string)
     description = "App subnets id"
-    default = ["subnet-aaca3be1", "subnet-c9e8cb93"]
+    default = ["subnet-0012a2b95bca635c3", "subnet-043d42017aa4d466b"]
 }
 #------------------------------------------------
 data "aws_availability_zones" "available" {}
