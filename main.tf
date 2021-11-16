@@ -71,7 +71,7 @@ resource "aws_security_group" "webSG" {
 resource "aws_launch_template" "web" {
   name = "web"
   image_id      = "ami-08edbb0e85d6a0a07"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   key_name = "TMS-ireland"
   user_data = filebase64("${path.module}/user_data.sh")
   disable_api_termination = true
