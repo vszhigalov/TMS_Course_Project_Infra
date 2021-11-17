@@ -23,7 +23,7 @@ pipeline {
     stages {
            stage('Notification on Slack Start') {
             steps {
-                 slackSend channel: '#cicd-devops', message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${BUILD_USER} started\n More info at: ${env.BUILD_URL}", blocks: [
+                 slackSend channel: '#cicd-devops', message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} started\n More info at: ${env.BUILD_URL}", blocks: [
                     [
                       "type": "section",
                       "text": [
@@ -101,7 +101,7 @@ pipeline {
 
       stage('Notification on Slack Finish') {
             steps {
-                slackSend channel: '#cicd-devops', message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${BUILD_USER} finished\n More info at: ${env.BUILD_URL}", blocks: [
+                slackSend channel: '#cicd-devops', message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} finished\n More info at: ${env.BUILD_URL}", blocks: [
                     [
                       "type": "section",
                       "text": [
