@@ -14,6 +14,11 @@ variable "app_subnets" {
     description = "App subnets id"
     default = ["subnet-0012a2b95bca635c3", "subnet-043d42017aa4d466b"]
 }
+variable "vpc_id" {
+    type = list(string)
+    description = "App vpc id"
+    default = ["vpc-0d3c54171c4b09049"]
+}
 #------------------------------------------------
 data "aws_availability_zones" "available" {}
 #------------------------------------------------
@@ -113,7 +118,7 @@ resource "aws_lb_target_group" "webtg" {
   port     = 80
   protocol = "HTTP"
   target_type = "instance"
-  vpc_id   = "vpc-0d3c54171c4b09049"
+  vpc_id   = var.vpc_id
 }
 #--------------------------------------------
 resource "aws_lb_listener" "webListener" {
@@ -181,12 +186,17 @@ resource "aws_lb" "weblb" {
 # resource "aws_default_subnet" "default_az2" {
 #   availability_zone = data.aws_availability_zones.available.names[1]
 # }
+#------------------------------------------
 
 resource "aws_subnet" "az1" {
+  vpc_id = var.vpc_id
+  cidr_blocks = "10.0.1.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
 }
 
 resource "aws_subnet" "az2" {
+  vpc_id = var.vpc_id
+  cidr_blocks = "10.0.2.0/24"
   availability_zone = data.aws_availability_zones.available.names[1]
 }
 
