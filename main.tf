@@ -12,12 +12,7 @@ variable "instance_type" {
 variable "app_subnets" {
     type = list(string)
     description = "App subnets id"
-    default = ["subnet-0012a2b95bca635c3", "subnet-043d42017aa4d466b"]
-}
-variable "vpc_id" {
-    type = list(string)
-    description = "App vpc id"
-    default = ["vpc-0d3c54171c4b09049"]
+    default = ["subnet-aaca3be1", "subnet-c9e8cb93"]
 }
 #------------------------------------------------
 data "aws_availability_zones" "available" {}
@@ -118,7 +113,7 @@ resource "aws_lb_target_group" "webtg" {
   port     = 80
   protocol = "HTTP"
   target_type = "instance"
-  vpc_id   = var.vpc_id
+  vpc_id   = "vpc-29d36750"
 }
 #--------------------------------------------
 resource "aws_lb_listener" "webListener" {
@@ -138,7 +133,7 @@ resource "aws_autoscaling_group" "webASG" {
   min_elb_capacity     = 2
   health_check_grace_period = 900
   health_check_type    = "ELB"
-  vpc_zone_identifier  = [aws_subnet.az1.id, aws_subnet.az2.id]
+  vpc_zone_identifier  = [aws_default_subnet.default_az1.id, aws_default_subnet.default_az2.id]
   launch_template {
     id      = aws_launch_template.web.id
     version = aws_launch_template.web.latest_version
@@ -179,24 +174,11 @@ resource "aws_lb" "weblb" {
 #     }
 }
 #------------------------------------------
-# resource "aws_default_subnet" "default_az1" {
-#   availability_zone = data.aws_availability_zones.available.names[0]
-# }
-#
-# resource "aws_default_subnet" "default_az2" {
-#   availability_zone = data.aws_availability_zones.available.names[1]
-# }
-#------------------------------------------
-
-resource "aws_subnet" "az1" {
-  vpc_id = var.vpc_id
-  cidr_block = "10.0.1.0/24"
+resource "aws_default_subnet" "default_az1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 }
 
-resource "aws_subnet" "az2" {
-  vpc_id = var.vpc_id
-  cidr_block = "10.0.2.0/24"
+resource "aws_default_subnet" "default_az2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 }
 
