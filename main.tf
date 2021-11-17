@@ -29,7 +29,7 @@ data "aws_instances" "webserver_instance" {
   depends_on = [aws_autoscaling_group.webASG]
 }
 
-output "aws_instans_public_ip" {
+output "aws_instance_public_ip" {
     value = data.aws_instances.webserver_instance.public_ips
 }
 #--------------------------------------------------
@@ -133,7 +133,7 @@ resource "aws_autoscaling_group" "webASG" {
   min_elb_capacity     = 2
   health_check_grace_period = 900
   health_check_type    = "ELB"
-  vpc_zone_identifier  = [aws_default_subnet.default_az1.id, aws_default_subnet.default_az2.id]
+  vpc_zone_identifier  = [aws_subnet.az1.id, aws_subnet.az2.id]
   launch_template {
     id      = aws_launch_template.web.id
     version = aws_launch_template.web.latest_version
@@ -174,11 +174,19 @@ resource "aws_lb" "weblb" {
 #     }
 }
 #------------------------------------------
-resource "aws_default_subnet" "default_az1" {
+# resource "aws_default_subnet" "default_az1" {
+#   availability_zone = data.aws_availability_zones.available.names[0]
+# }
+#
+# resource "aws_default_subnet" "default_az2" {
+#   availability_zone = data.aws_availability_zones.available.names[1]
+# }
+
+resource "aws_subnet" "az1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 }
 
-resource "aws_default_subnet" "default_az2" {
+resource "aws_subnet" "az2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 }
 
