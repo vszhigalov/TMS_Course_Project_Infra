@@ -1,0 +1,123 @@
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+    agent {label 'slave'}
+    parameters {
+        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+
+    }
+
+
+     environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        CLASS           = "GitSCM"
+        BRANCH          = "main"
+        GIT_CREDENTIALS = "TMS_Project"
+        GIT_URL         = "git@github.com:vszhigalov/TMS_Course_Project_Infra.git"
+       }
+
+    tools {
+        "org.jenkinsci.plugins.terraform.TerraformInstallation" "terraform"
+              }
+    stages {
+           stage('Notification on Slack Start') {
+            steps {
+                 slackSend channel: '#test', message: 'Job Start', blocks: [
+                    [
+                      "type": "section",
+                      "text": [
+                        "type": "mrkdwn",
+                        "text": "*Make our Infra is available*"
+                      ]
+                    ],
+                    [
+                      "type": "section",
+                      "text": [
+                        "type": "mrkdwn",
+                        "text": "This Job up Load Balancer, Target Group, create Launch Template and ASG"
+                      ]
+                     ]
+                    ]
+               }
+             }
+
+
+          stage('Checkout SCM') {
+            steps {
+                checkout([
+                    $class: "${CLASS}",
+                    branches: [[name: "${BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: "${GIT_URL}",
+                        credentialsId: "${GIT_CREDENTIALS}",
+                    ]]
+                ])
+            }
+        }
+        stage('Init') {
+            steps {
+                sh 'terraform init -input=false'
+                  }
+        }
+        stage('Plan') {
+            steps {
+                //sh 'terraform init -input=false'
+                //sh 'terraform workspace new ${environment}'
+                //sh 'pwd; terraform workspace select ${environment}'
+                sh "pwd; terraform plan -input=false -out tfplan"
+                sh "pwd; terraform show -no-color tfplan > tfplan.txt"
+            }
+        }
+        stage('Approval') {
+           when {
+               not {
+                   equals expected: true, actual: params.autoApprove
+               }
+           }
+
+           steps {
+               script {
+                    def plan = readFile 'tfplan.txt'
+                    input message: "Do you want to apply the plan?",
+                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+               }
+           }
+       }
+
+        stage('Apply/destroy') {
+            steps {
+                sh "pwd; terraform apply -input=false tfplan"
+                //sh "pwd; terraform destroy -auto-approve"
+                sh "ls -al"
+                //sh 'var1="weblb-1930884149.us-east-1.elb.amazonaws.com"'
+              }
+        }
+        stage('S3Copy step') {
+           steps {
+               s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'mytmsbuckets', excludedFile: 'Jenkinsfile', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: false, selectedRegion: 'eu-west-1', showDirectlyInBrowser: false, sourceFile: '*/', storageClass: 'STANDARD', uploadFromSlave: true, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'Jenkins', userMetadata: []
+      }
+    }
+
+      stage('Notification on Slack Finish') {
+            steps {
+                slackSend channel: '#test', message: 'Job Finish', blocks: [
+                    [
+                      "type": "section",
+                      "text": [
+                        "type": "mrkdwn",
+                        "text": "*Job finished*"
+                      ]
+                    ],
+                    [
+                      "type": "section",
+                      "text": [
+                        "type": "mrkdwn",
+                        "text": "Run Load Balancer, Target Group, create Launch Template and ASG ${sh (returnStdout: true, script: 'cat dns.txt').trim()}"
+                      ]
+                     ]
+                    ]
+               }
+             }
+   }
+  }
