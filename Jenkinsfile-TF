@@ -23,7 +23,7 @@ pipeline {
     stages {
            stage('Notification on Slack Start') {
             steps {
-                 slackSend channel: '#test', message: 'Job Start', blocks: [
+                 slackSend channel: '#cicd-devops', message: '[${JOB_NAME}]Job Start', blocks: [
                     [
                       "type": "section",
                       "text": [
@@ -101,7 +101,7 @@ pipeline {
 
       stage('Notification on Slack Finish') {
             steps {
-                slackSend channel: '#test', message: 'Job Finish', blocks: [
+                slackSend channel: '#cicd-devops', message: '[${JOB_NAME}]Job Finish', blocks: [
                     [
                       "type": "section",
                       "text": [
