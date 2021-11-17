@@ -190,13 +190,13 @@ resource "aws_lb" "weblb" {
 
 resource "aws_subnet" "az1" {
   vpc_id = var.vpc_id
-  cidr_blocks = "10.0.1.0/24"
+  cidr_block = "10.0.1.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
 }
 
 resource "aws_subnet" "az2" {
   vpc_id = var.vpc_id
-  cidr_blocks = "10.0.2.0/24"
+  cidr_block = "10.0.2.0/24"
   availability_zone = data.aws_availability_zones.available.names[1]
 }
 
