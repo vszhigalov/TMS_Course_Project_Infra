@@ -12,7 +12,7 @@ variable "instance_type" {
 variable "app_subnets" {
     type = list(string)
     description = "App subnets id"
-    default = ["subnet-aaca3be1", "subnet-c9e8cb93"]
+    default = ["subnet-0012a2b95bca635c3", "subnet-043d42017aa4d466b"]
 }
 #------------------------------------------------
 data "aws_availability_zones" "available" {}
@@ -113,7 +113,7 @@ resource "aws_lb_target_group" "webtg" {
   port     = 80
   protocol = "HTTP"
   target_type = "instance"
-  vpc_id   = "vpc-29d36750"
+  vpc_id   = "vpc-0d3c54171c4b09049"
 }
 #--------------------------------------------
 resource "aws_lb_listener" "webListener" {
