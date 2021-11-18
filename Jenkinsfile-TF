@@ -90,6 +90,7 @@ pipeline {
                 //sh "pwd; terraform apply -input=false tfplan"
                 sh "pwd; terraform destroy -auto-approve"
                 sh "ls -al"
+//
                 //sh 'var1="weblb-1930884149.us-east-1.elb.amazonaws.com"'
               }
         }
